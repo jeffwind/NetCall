@@ -361,8 +361,9 @@ public class CallTestHttps extends BaseCall {
 
   
 ## 3.HostnameVerifier选择
-域名校验*HostnameVerifier*默认是不校验的。如果需要对域名进行校验，可以使用`BaseCall.setHttpsData(IHttpsData httpsData)`方法。
-*IHttpData*接口提供`HostnameVerifier getHostNameVerifier()`方法进行重写。如果只需要重写该方法法，可以直接继承 *HttpsDataDef* 类，该类继承自 *IHttpData*。
+域名校验*HostnameVerifier*默认是不校验的。如果需要对域名进行校验，可以使用`BaseCall.setHttpsData(IHttpsData httpsData)`方法。  
+*IHttpData*接口提供`HostnameVerifier getHostNameVerifier()`方法进行重写。  
+如果只需要重写该方法，可以直接继承 *HttpsDataDef* 类，该类继承自 *IHttpData*。
 
   
 ## 4.重写证书获取方法
