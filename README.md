@@ -273,8 +273,9 @@ protected void onNextCallTurn(BaseCall lastCall, Response lastCallResponse)
 
 # 四、缓存Cache
 ## 1.缓存机制
-缓存机制作用是将网络获取到的数据保存到本地，在下一次进行相同请求时直接从本地缓存中读取数据。他的好处在于不通过网络马上响应请求返回数据，加快了数据的加载，以及在无网环境下依然可以使用。
-当通过`{@link BaseCall#call(Callback)}`发起网络请求，首先会从缓存获取数据，通过`{@link Callback#onResp(Response)}`返回数据。如果缓存超时，则重新从服务器获取数据，如果服务器数据与缓存不一致，则再一次调用`{@link Callback#onResp(Response)}`返回最新数据。服务器数据与缓存数据一致，则更新缓存最后使用时间，流程结束。
+缓存机制作用是将网络获取到的数据保存到本地，在下一次进行相同请求时直接从本地缓存中读取数据。他的好处在于不通过网络马上响应请求返回数据，加快了数据的加载，以及在无网环境下依然可以使用。  
+当通过`{@link BaseCall#call(Callback)}`发起网络请求，首先会从缓存获取数据，通过`{@link Callback#onResp(Response)}`返回数据。  
+如果缓存超时，则重新从服务器获取数据，此时如果服务器数据与缓存不一致，则再一次调用`{@link Callback#onResp(Response)}`返回最新数据。服务器数据与缓存数据一致，则更新缓存最后使用时间，流程结束。
 
   
 ## 2.简单使用
@@ -329,6 +330,7 @@ NetCall.setNeedLogCache(true);
 
 
 # 五、https认证
+
 如果想要使用https的连接，可以直接使用，不需要添加任何代码。如果想要使用https单向认证或者双项认证的功能。这个库提供了一种较为简单的方式实现，避免了写太多的代码。
 
 ## 1.单向认证
@@ -342,10 +344,11 @@ public class CallTestHttps extends BaseCall {
 }
 ```
 
-这是一个无参数的网络连接。
-单向认证的作用是客户端认证服务器身份，也即客户端判断返回的数据是否真的由目标服务器发送过来，避免连接被劫持。单向认证需要证书，这里支持crt证书文件。上面例子*trustCrtPaths*可以填入多个crt证书路径。
-证书路径可以选择放在文件系统或者assets中。默认是从assets中读取，如果想要从文件系统中读取，可以使用*@CallHttps*注解的*pathType*参数，选择文件是从文件管理器获取还是assets获取。
+这是一个无参数的网络连接。  
+单向认证的作用是客户端认证服务器身份，也即客户端判断返回的数据是否真的由目标服务器发送过来，避免连接被劫持。单向认证需要证书，这里支持crt证书文件。上面例子trustCrtPaths可以填入多个crt证书路径。  
+证书路径可以选择放在文件系统或者assets中。默认是从assets中读取，如果想要从文件系统中读取，可以使用@CallHttps注解的pathType参数，从而选择文件是从文件管理器获取还是assets获取。  
 
+  
 ## 2.双向认证
 例子
 ```java
@@ -389,3 +392,8 @@ public interface IHttpsData {
 }
 ```
 可以通过重写这些方法获取https证书数据流。
+
+  
+## 5.不使用NetCall库的https机制
+如果想要使用Android原生的接口实现https，而不使用NetCall库的https机制。可以重写`BaseCall的OkHttpClient.Builder  onHttpClientBuilder()`方法。
+**OkHttpClient.Builder** 类是OkHttps中的类，该类中的`sslSocketFactory(...)`方法可以让你实现自己的https逻辑。
