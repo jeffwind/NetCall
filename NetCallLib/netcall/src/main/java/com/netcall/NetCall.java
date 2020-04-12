@@ -20,6 +20,8 @@ public class NetCall {
     private static String sLogTag = "NetCall";
     private static String sBaseUrlDefault;
     private static String sCacheRootPath;
+    private static int sConnectTimeout = -1;
+    private static int sReadTimeout = -1;
 
     public static void init(Context context) {
         sAppContext = context.getApplicationContext();
@@ -100,6 +102,28 @@ public class NetCall {
 
     public static String getCacheRootPath() {
         return sCacheRootPath;
+    }
+
+    /**
+     * 全局设置连接超时时间，单位秒
+     */
+    public static void setDefaultConnectTimeout(int timeout) {
+        sConnectTimeout = timeout;
+    }
+
+    public static int getConnectTimeout() {
+        return sConnectTimeout;
+    }
+
+    /**
+     * 全局设置读超时时间，单位秒
+     */
+    public static void setDefaultReadTimeout(int timeout) {
+        sReadTimeout = timeout;
+    }
+
+    public static int getReadTimeout() {
+        return sReadTimeout;
     }
 
     /**

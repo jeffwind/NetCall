@@ -16,6 +16,13 @@ public class Params implements Iterable<Param> {
         paramList.add(param);
     }
 
+    public void addAll(Params params) {
+        if (params == null) {
+            return;
+        }
+        paramList.addAll(params.paramList);
+    }
+
     public boolean remove(Param param) {
         return paramList.remove(param);
     }

@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -38,6 +39,8 @@ public class NetCallProc {
     private BaseCall call;
     private NetCallCache netCallCache;
     private NetCallHttps netCallHttps;
+    private int connectTimeout = -1;
+    private int readTimeout = -1;
 
     public NetCallProc(BaseCall call) {
         this.call = call;
@@ -73,7 +76,7 @@ public class NetCallProc {
             suffixUrl = callGet.value();
         } else if (clazz.isAnnotationPresent(CallPost.class)) {
             CallPost callGet = clazz.getAnnotation(CallPost.class);
-            suffixUrl = callGet.baseUrl();
+            suffixUrl = callGet.value();
         } else {
             throw new IllegalStateException("There is no CallGet or CallPost in " + clazz.getSimpleName());
         }
@@ -232,6 +235,38 @@ public class NetCallProc {
 
     public void setHttpsData(IHttpsData httpsData) {
         netCallHttps.setHttpData(httpsData);
+    }
+
+    public OkHttpClient.Builder createOkHttpBuilder(SendData sendData) {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        if (connectTimeout > 0) {
+            builder.connectTimeout(connectTimeout, TimeUnit.SECONDS);
+        } else if (NetCall.getConnectTimeout() > 0) {
+            builder.connectTimeout(NetCall.getConnectTimeout(), TimeUnit.SECONDS);
+        }
+        if (readTimeout > 0) {
+            builder.readTimeout(readTimeout, TimeUnit.SECONDS);
+        } else if (NetCall.getReadTimeout() > 0) {
+            builder.readTimeout(NetCall.getReadTimeout(), TimeUnit.SECONDS);
+        }
+        toHttpsIfNeed(sendData, builder);
+        return builder;
+    }
+
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    public void setConnectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
+
+    public int getReadTimeout() {
+        return readTimeout;
+    }
+
+    public void setReadTimeout(int readTimeout) {
+        this.readTimeout = readTimeout;
     }
 
     public void printSendLog(Request request) {

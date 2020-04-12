@@ -54,6 +54,20 @@ public abstract class BaseCall {
         NetCallThreadDo.execute(createExecuteRunnable());
     }
 
+    /**
+     * 从缓存中获取数据
+     */
+    public IBean callCache() {
+        sendData = newSendData();
+        onInterceptCall(sendData);
+
+        Response result = callProc.getCacheResult();
+        if (result == null) {
+            return null;
+        }
+        return result.getBean();
+    }
+
     /** 设置本Call完毕后，下一个要执行的Call */
     public void nextCall(BaseCall call) {
         nextCall = call;
@@ -73,6 +87,20 @@ public abstract class BaseCall {
      */
     public void setHttpsData(IHttpsData httpsData) {
         callProc.setHttpsData(httpsData);
+    }
+
+    /**
+     * 设置超时时间，单位为秒
+     */
+    public void setConnectTimeout(int timeout) {
+        callProc.setConnectTimeout(timeout);
+    }
+
+    /**
+     * 设置读超时时间，单位为秒
+     */
+    public void setReadTimeout(int timeout) {
+        callProc.setReadTimeout(timeout);
     }
 
     /** 获取baseUrl */
@@ -122,9 +150,7 @@ public abstract class BaseCall {
 
     /** 可重写该方法构造ClientBuilder */
     protected OkHttpClient.Builder onHttpClientBuilder() {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        callProc.toHttpsIfNeed(sendData, builder);
-        return builder;
+        return callProc.createOkHttpBuilder(sendData);
     }
 
     /** 将okhttp3的Response转化为NetCall的结果数据类 */
@@ -230,7 +256,7 @@ public abstract class BaseCall {
         return result;
     }
 
-    private void invokeResultIfNeed(Response response) {
+    private void invokeResultIfNeed(final Response response) {
         if (response == null) {
             return;
         }
@@ -249,7 +275,7 @@ public abstract class BaseCall {
         }
     }
 
-    private void invokeNextCall(Response response) {
+    private void invokeNextCall(final Response response) {
         if (nextCall == null) {
             return;
         }
